@@ -1,17 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 const API = "https://fazeelayazqasimi-brandflow.hf.space/api";
+const ADMIN_PASSWORD = "admin123";
 
-const IconBolt     = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#fff"/></svg>;
-const IconScraper  = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
-const IconLogs     = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
-const IconHelp     = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
-const IconMail     = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>;
-const IconTrash    = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>;
-const IconPlus     = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-const IconDot      = () => <svg width="6" height="6" viewBox="0 0 6 6" fill="#4F46E5"><circle cx="3" cy="3" r="3"/></svg>;
-const IconRefresh  = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
-const IconAnalysis = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20h20"/><path d="M7 20V10"/><path d="M12 20V4"/><path d="M17 20v-6"/></svg>;
-const IconChevron  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+const IconBolt      = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#fff"/></svg>;
+const IconScraper   = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
+const IconLogs      = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
+const IconHelp      = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+const IconMail      = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>;
+const IconTrash     = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>;
+const IconPlus      = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+const IconDot       = () => <svg width="6" height="6" viewBox="0 0 6 6" fill="#4F46E5"><circle cx="3" cy="3" r="3"/></svg>;
+const IconRefresh   = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
+const IconAnalysis  = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20h20"/><path d="M7 20V10"/><path d="M12 20V4"/><path d="M17 20v-6"/></svg>;
+const IconChevron   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+const IconBreakdown = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="6" width="4" height="14" rx="1"/><rect x="17" y="9" width="4" height="11" rx="1"/></svg>;
+const IconLock      = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
 
 // ─── RESPONSIVE HOOK ──────────────────────────────────────
 function useIsMobile(breakpoint = 860) {
@@ -27,14 +30,63 @@ function useIsMobile(breakpoint = 860) {
 }
 
 const NAV_ITEMS = [
-  { id: "Scraper",  icon: <IconScraper />  },
-  { id: "Analysis", icon: <IconAnalysis /> },
-  { id: "Outreach", icon: <IconMail />     },
-  { id: "Logs",     icon: <IconLogs />     },
-  { id: "Help",     icon: <IconHelp />     },
+  { id: "Scraper",   icon: <IconScraper />   },
+  { id: "Analysis",  icon: <IconAnalysis />  },
+  { id: "Breakdown", icon: <IconBreakdown /> },
+  { id: "Outreach",  icon: <IconMail />      },
+  { id: "Logs",      icon: <IconLogs />      },
+  { id: "Help",      icon: <IconHelp />      },
 ];
 
+// ─── PASSWORD GATE ────────────────────────────────────────
+function LoginGate({ onSuccess }) {
+  const [pw, setPw]       = useState("");
+  const [error, setError] = useState(false);
+  const inputRef          = useRef(null);
+
+  useEffect(() => { inputRef.current && inputRef.current.focus(); }, []);
+
+  function submit() {
+    if (pw === ADMIN_PASSWORD) onSuccess();
+    else { setError(true); setPw(""); }
+  }
+
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F8FAFC", fontFamily: "'Inter',system-ui,sans-serif", padding: 20 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        .gate-input:focus { outline: none; border-color: #4F46E5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.12) !important; }
+        .gate-btn:hover { background: #4338CA !important; }
+        @keyframes shake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+      `}</style>
+      <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: "36px 32px", width: 340, boxShadow: "0 8px 32px rgba(15,23,42,0.08)", animation: error ? "shake 0.4s" : "none" }}>
+        <div style={{ width: 44, height: 44, background: "#4F46E5", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, boxShadow: "0 2px 10px rgba(79,70,229,0.3)" }}>
+          <IconLock />
+        </div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>Connexus Lead Intel</div>
+        <div style={{ fontSize: 13, color: "#64748B", marginBottom: 22 }}>Enter the admin password to continue.</div>
+        <input
+          ref={inputRef}
+          className="gate-input"
+          type="password"
+          value={pw}
+          onChange={e => { setPw(e.target.value); setError(false); }}
+          onKeyDown={e => { if (e.key === "Enter") submit(); }}
+          placeholder="Password"
+          style={{ width: "100%", background: "#F8FAFC", border: error ? "1.5px solid #EF4444" : "1.5px solid #E2E8F0", borderRadius: 8, color: "#0F172A", fontSize: 14, padding: "11px 13px", fontFamily: "inherit", marginBottom: error ? 8 : 16, transition: "all 0.15s" }}
+        />
+        {error && <div style={{ color: "#EF4444", fontSize: 12, fontWeight: 500, marginBottom: 14 }}>Incorrect password. Try again.</div>}
+        <button onClick={submit} className="gate-btn" style={{ width: "100%", background: "#4F46E5", border: "none", color: "#fff", fontSize: 14, fontWeight: 600, padding: "11px 16px", borderRadius: 8, cursor: "pointer", transition: "all 0.12s" }}>
+          Unlock Dashboard
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  const [authenticated, setAuthenticated]     = useState(false);
   const [page, setPage]                       = useState("Scraper");
   const [presets, setPresets]                 = useState([]);
   const [selectedPresets, setSelectedPresets] = useState([]);
@@ -49,7 +101,7 @@ export default function App() {
   const logRef                                = useRef(null);
   const isMobile                              = useIsMobile();
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => { if (authenticated) fetchAll(); }, [authenticated]);
   useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [logs]);
 
   function fetchAll() { fetchPresets(); fetchQueue(); fetchStats(); fetchEmailStats(); fetchAnalysisStats(); }
@@ -91,6 +143,8 @@ export default function App() {
 
   const totalSelected = selectedPresets.length + queue.length;
 
+  if (!authenticated) return <LoginGate onSuccess={() => setAuthenticated(true)} />;
+
   return (
     <div style={{ ...s.root, flexDirection: isMobile ? "column" : "row" }}>
       <style>{`
@@ -125,6 +179,9 @@ export default function App() {
         .bottom-nav-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; flex:1; background:transparent; border:none; padding:8px 2px 6px; cursor:pointer; color:#94A3B8; font-size:10px; font-weight:600; }
         .bottom-nav-btn.active { color:#4F46E5; }
         .lead-card { background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:14px 16px; margin-bottom:10px; }
+        .breakdown-tab { background:transparent; border:none; padding:8px 14px; font-size:13px; font-weight:600; color:#94A3B8; cursor:pointer; border-radius:8px; transition:all 0.12s; }
+        .breakdown-tab.active { background:#EEF2FF; color:#4F46E5; }
+        .breakdown-tab:hover { color:#4F46E5; }
         @media (max-width: 860px) {
           .desktop-only { display: none !important; }
         }
@@ -180,11 +237,12 @@ export default function App() {
 
       {/* MAIN */}
       <main style={{ ...s.main, ...(isMobile ? s.mainMobile : {}) }}>
-        {page === "Scraper"  && <ScraperPage  isMobile={isMobile} stats={stats} presets={presets} selectedPresets={selectedPresets} togglePreset={togglePreset} queue={queue} removeFromQueue={removeFromQueue} clearQueue={clearQueue} form={form} setForm={setForm} addToQueue={addToQueue} maxLeads={maxLeads} setMaxLeads={setMaxLeads} totalSelected={totalSelected} running={running} startScraping={startScraping} logs={logs} logRef={logRef} />}
-        {page === "Analysis" && <AnalysisPage isMobile={isMobile} analysisStats={analysisStats} fetchAnalysisStats={fetchAnalysisStats} />}
-        {page === "Outreach" && <OutreachPage isMobile={isMobile} emailStats={emailStats} fetchEmailStats={fetchEmailStats} />}
-        {page === "Logs"     && <LogsPage     logs={logs} clearLogs={() => setLogs([])} />}
-        {page === "Help"     && <HelpPage />}
+        {page === "Scraper"   && <ScraperPage   isMobile={isMobile} stats={stats} presets={presets} selectedPresets={selectedPresets} togglePreset={togglePreset} queue={queue} removeFromQueue={removeFromQueue} clearQueue={clearQueue} form={form} setForm={setForm} addToQueue={addToQueue} maxLeads={maxLeads} setMaxLeads={setMaxLeads} totalSelected={totalSelected} running={running} startScraping={startScraping} logs={logs} logRef={logRef} />}
+        {page === "Analysis"  && <AnalysisPage  isMobile={isMobile} analysisStats={analysisStats} fetchAnalysisStats={fetchAnalysisStats} />}
+        {page === "Breakdown" && <BreakdownPage isMobile={isMobile} />}
+        {page === "Outreach"  && <OutreachPage  isMobile={isMobile} emailStats={emailStats} fetchEmailStats={fetchEmailStats} />}
+        {page === "Logs"      && <LogsPage      logs={logs} clearLogs={() => setLogs([])} />}
+        {page === "Help"      && <HelpPage />}
       </main>
 
       {/* MOBILE BOTTOM NAV */}
@@ -197,6 +255,135 @@ export default function App() {
             </button>
           ))}
         </nav>
+      )}
+    </div>
+  );
+}
+
+// ─── BREAKDOWN PAGE (per niche / per country) ─────────────
+function BreakdownPage({ isMobile }) {
+  const [leads, setLeads]     = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView]       = useState("niche"); // "niche" | "country"
+
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const r    = await fetch(`${API}/leads-analysis`);
+      const data = await r.json();
+      setLeads(data || []);
+    } catch {
+      setLeads([]);
+    }
+    setLoading(false);
+  }
+
+  const total   = leads.length;
+  const palette = ["#4F46E5","#0EA5E9","#10B981","#F59E0B","#EF4444","#8B5CF6","#EC4899","#14B8A6","#6366F1","#F97316"];
+
+  function groupBy(field, fallback) {
+    const counts = {};
+    leads.forEach(l => {
+      const key = (l[field] && String(l[field]).trim()) || fallback;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }
+
+  const rows     = view === "niche" ? groupBy("niche", "Uncategorized") : groupBy("country", "Unknown");
+  const maxCount = rows.length ? rows[0][1] : 1;
+
+  return (
+    <div style={{ animation: "fadeIn 0.2s ease" }}>
+      <div style={{ ...s.pageHeader, ...(isMobile ? s.pageHeaderMobile : {}) }}>
+        <div>
+          <div style={s.eyebrow}>Lead Distribution</div>
+          <div style={{ ...s.pageTitle, ...(isMobile ? s.pageTitleMobile : {}) }}>Breakdown</div>
+          <div style={s.pageSub}>How your leads split across niche and country.</div>
+        </div>
+        <button onClick={load} className="refresh-btn"
+          style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s", whiteSpace:"nowrap" }}>
+          <IconRefresh /> Refresh
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display:"flex", gap:6, marginBottom:20, background:"#fff", border:"1px solid #E2E8F0", borderRadius:10, padding:4, width: isMobile ? "100%" : "fit-content" }}>
+        <button className={`breakdown-tab ${view === "niche" ? "active" : ""}`} style={{ flex: isMobile ? 1 : "initial" }} onClick={() => setView("niche")}>By Niche</button>
+        <button className={`breakdown-tab ${view === "country" ? "active" : ""}`} style={{ flex: isMobile ? 1 : "initial" }} onClick={() => setView("country")}>By Country</button>
+      </div>
+
+      {loading ? (
+        <div style={{ ...s.card, padding:0 }}>
+          <div style={{ padding:"48px 0", textAlign:"center", color:"#94A3B8", fontSize:13 }}>
+            <div style={{ width:28, height:28, border:"2.5px solid #E2E8F0", borderTopColor:"#4F46E5", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
+            Loading breakdown...
+          </div>
+        </div>
+      ) : rows.length === 0 ? (
+        <div style={{ ...s.card, padding:0 }}>
+          <div style={{ padding:"48px 0", textAlign:"center", color:"#94A3B8", fontSize:13 }}>
+            <div style={{ fontSize:32, marginBottom:10 }}>📊</div>
+            No leads yet.<br />
+            <span style={{ fontSize:12 }}>Run the scraper first, then come back here.</span>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div style={{ ...s.statGrid, gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 10 : 14, marginBottom:24 }}>
+            <div className="stat-card" style={s.statCard}>
+              <div style={{ ...s.statAccentBar, background:"#4F46E5" }} />
+              <div style={s.statLabel}>{view === "niche" ? "Niches" : "Countries"}</div>
+              <div style={{ ...s.statValue, color:"#4F46E5", fontSize: isMobile ? 26 : 34 }}>{rows.length}</div>
+              <div style={s.statFoot}>Distinct groups</div>
+            </div>
+            <div className="stat-card" style={s.statCard}>
+              <div style={{ ...s.statAccentBar, background:"#10B981" }} />
+              <div style={s.statLabel}>Total Leads</div>
+              <div style={{ ...s.statValue, color:"#10B981", fontSize: isMobile ? 26 : 34 }}>{total}</div>
+              <div style={s.statFoot}>In Google Sheet</div>
+            </div>
+            <div className="stat-card" style={s.statCard}>
+              <div style={{ ...s.statAccentBar, background:"#F59E0B" }} />
+              <div style={s.statLabel}>Top {view === "niche" ? "Niche" : "Country"}</div>
+              <div style={{ fontSize: isMobile ? 15 : 17, fontWeight:700, color:"#0F172A", marginTop:10, lineHeight:1.3 }}>{rows[0][0]}</div>
+              <div style={s.statFoot}>{rows[0][1]} leads</div>
+            </div>
+            <div className="stat-card" style={s.statCard}>
+              <div style={{ ...s.statAccentBar, background:"#8B5CF6" }} />
+              <div style={s.statLabel}>Avg per Group</div>
+              <div style={{ ...s.statValue, color:"#8B5CF6", fontSize: isMobile ? 26 : 34 }}>{Math.round(total / rows.length)}</div>
+              <div style={s.statFoot}>Leads / group</div>
+            </div>
+          </div>
+
+          <div style={s.card}>
+            <div style={{ ...s.cardHeader, marginBottom:4 }}>
+              <div style={s.cardTitle}>{view === "niche" ? "Leads by Niche" : "Leads by Country"}</div>
+              <div style={s.cardSub}>Sorted by lead count</div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:4, marginTop:16 }}>
+              {rows.map(([name, count], i) => {
+                const pct    = Math.round((count / total) * 100);
+                const barPct = Math.round((count / maxCount) * 100);
+                const color  = palette[i % palette.length];
+                return (
+                  <div key={name} className="analysis-row" style={{ padding: isMobile ? "10px 6px" : "11px 8px", borderRadius:8, transition:"background 0.1s" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6, gap:8 }}>
+                      <span style={{ fontSize:13, fontWeight:600, color:"#0F172A", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{name}</span>
+                      <span style={{ fontSize:12, color:"#64748B", flexShrink:0 }}><b style={{ color:"#0F172A", fontSize:14 }}>{count}</b> leads · {pct}%</span>
+                    </div>
+                    <div style={{ height:8, borderRadius:6, background:"#F1F5F9", overflow:"hidden" }}>
+                      <div style={{ height:"100%", width:`${barPct}%`, background:color, borderRadius:6, transition:"width 0.3s ease" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -754,13 +941,14 @@ function HelpPage() {
     { n:"2", title:"Add a custom query",  desc:"Fill in Search Term, Location, Country, and a Niche Label. Click Add to Queue. Custom queries persist across restarts via custom_queue.json." },
     { n:"3", title:"Set max leads",       desc:"Use the slider to control how many businesses to scrape per query. Start with 20 to 30 to test before running large batches." },
     { n:"4", title:"Start scraping",      desc:"Click Start Scraping. Chrome opens automatically and browses Google Maps. Purple [ANALYZING] lines mean the website analysis is running. Green [+] lines are confirmed leads." },
-    { n:"5", title:"View Analysis page",  desc:"After scraping, go to the Analysis tab. Click any KPI card to filter leads by that issue. Each lead shows SSL, speed, SEO score, broken links, social media, and tailored suggestions." },
+    { n:"5", title:"View Breakdown & Analysis", desc:"Go to Breakdown to see how leads split by niche and country. Go to Analysis to filter leads by SSL, speed, SEO, broken links, or missing socials." },
     { n:"6", title:"Check your sheet",    desc:"All leads push live to the Leads tab. Columns K–S hold the analysis data: SSL, Speed, SEO Score, Broken Links, Meta Title, Meta Desc, Social Media, Issues, Suggestions." },
   ];
   const tips = [
     { title:"Use the analysis to pitch",     desc:"Sort by 'No SSL' or 'Low SEO' — these are your easiest sells. Every issue listed is a pain point you can solve." },
     { title:"Limit queries per session",     desc:"More than 5 to 6 queries per session can trigger Google rate limiting. Split large campaigns across multiple runs." },
     { title:"Email extraction is best-effort", desc:"The scraper checks 12 pages per website. Businesses without a public email will show NA in the sheet." },
+    { title:"Dashboard is password protected", desc:"This panel is locked with an admin password. Anyone opening the link needs it to see leads or run the scraper." },
   ];
   return (
     <div>
