@@ -11,6 +11,28 @@ const IconPlus     = () => <svg width="13" height="13" viewBox="0 0 24 24" fill=
 const IconDot      = () => <svg width="6" height="6" viewBox="0 0 6 6" fill="#4F46E5"><circle cx="3" cy="3" r="3"/></svg>;
 const IconRefresh  = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
 const IconAnalysis = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20h20"/><path d="M7 20V10"/><path d="M12 20V4"/><path d="M17 20v-6"/></svg>;
+const IconChevron  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+
+// ─── RESPONSIVE HOOK ──────────────────────────────────────
+function useIsMobile(breakpoint = 860) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
+  );
+  useEffect(() => {
+    function onResize() { setIsMobile(window.innerWidth <= breakpoint); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [breakpoint]);
+  return isMobile;
+}
+
+const NAV_ITEMS = [
+  { id: "Scraper",  icon: <IconScraper />  },
+  { id: "Analysis", icon: <IconAnalysis /> },
+  { id: "Outreach", icon: <IconMail />     },
+  { id: "Logs",     icon: <IconLogs />     },
+  { id: "Help",     icon: <IconHelp />     },
+];
 
 export default function App() {
   const [page, setPage]                       = useState("Scraper");
@@ -25,6 +47,7 @@ export default function App() {
   const [maxLeads, setMaxLeads]               = useState(20);
   const [form, setForm]                       = useState({ query: "", location: "", country: "", niche: "" });
   const logRef                                = useRef(null);
+  const isMobile                              = useIsMobile();
 
   useEffect(() => { fetchAll(); }, []);
   useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [logs]);
@@ -69,16 +92,17 @@ export default function App() {
   const totalSelected = selectedPresets.length + queue.length;
 
   return (
-    <div style={s.root}>
+    <div style={{ ...s.root, flexDirection: isMobile ? "column" : "row" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; }
         input:focus { outline: none; border-color: #4F46E5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.12) !important; }
         button:disabled { opacity: 0.45; cursor: not-allowed; }
+        button { -webkit-tap-highlight-color: transparent; }
         input[type=range] { -webkit-appearance: none; appearance: none; height: 4px; background: #E2E8F0; border-radius: 4px; outline: none; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #4F46E5; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(79,70,229,0.35); cursor: pointer; }
-        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #4F46E5; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(79,70,229,0.35); cursor: pointer; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
@@ -95,60 +119,91 @@ export default function App() {
         .issue-chip { display:inline-block; background:#FEF3C7; color:#92400E; border-radius:4px; padding:2px 7px; font-size:11px; font-weight:500; margin:2px; }
         .soc-chip   { display:inline-block; background:#EEF2FF; color:#3730A3; border-radius:4px; padding:2px 7px; font-size:11px; font-weight:500; margin:2px; }
         .suggest-line { border-left:3px solid #4F46E5; padding-left:10px; margin-bottom:6px; font-size:12px; color:#334155; line-height:1.5; }
+        .kpi-scroll { display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; padding-bottom:4px; }
+        .kpi-scroll::-webkit-scrollbar { display:none; }
+        .kpi-scroll > div { scroll-snap-align:start; }
+        .bottom-nav-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; flex:1; background:transparent; border:none; padding:8px 2px 6px; cursor:pointer; color:#94A3B8; font-size:10px; font-weight:600; }
+        .bottom-nav-btn.active { color:#4F46E5; }
+        .lead-card { background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:14px 16px; margin-bottom:10px; }
+        @media (max-width: 860px) {
+          .desktop-only { display: none !important; }
+        }
+        @media (min-width: 861px) {
+          .mobile-only { display: none !important; }
+        }
       `}</style>
 
-      {/* SIDEBAR */}
-      <aside style={s.sidebar}>
-        <div style={s.logo}>
-          <div style={s.logoIcon}><IconBolt /></div>
-          <div>
+      {/* MOBILE TOP BAR */}
+      {isMobile && (
+        <header style={s.mobileHeader}>
+          <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+            <div style={s.logoIcon}><IconBolt /></div>
             <div style={s.logoText}>Connexus</div>
-            <div style={s.logoSub}>Lead Intel</div>
           </div>
-        </div>
-        <div style={s.navSection}>
-          <div style={s.navLabel}>Menu</div>
-          {[
-            { id: "Scraper",  icon: <IconScraper />  },
-            { id: "Analysis", icon: <IconAnalysis /> },
-            { id: "Outreach", icon: <IconMail />     },
-            { id: "Logs",     icon: <IconLogs />     },
-            { id: "Help",     icon: <IconHelp />     },
-          ].map(({ id, icon }) => (
-            <button key={id} className="nav-btn" onClick={() => setPage(id)}
-              style={{ ...s.navBtn, ...(page === id ? s.navBtnActive : {}) }}>
-              <span style={{ ...s.navBtnIcon, ...(page === id ? { color: "#4F46E5" } : {}) }}>{icon}</span>
-              {id}
-              {page === id && <div style={s.navActivePill} />}
-            </button>
-          ))}
-        </div>
-        <div style={s.sidebarFoot}>
-          <div style={s.footCard}>
-            <div style={s.footRow}>
-              <span style={s.footPlan}>Pro Plan</span>
-              <span style={s.footBadge}>Active</span>
+          <div style={s.mobileHeaderBadge}>Pro · 84%</div>
+        </header>
+      )}
+
+      {/* DESKTOP SIDEBAR */}
+      {!isMobile && (
+        <aside style={s.sidebar}>
+          <div style={s.logo}>
+            <div style={s.logoIcon}><IconBolt /></div>
+            <div>
+              <div style={s.logoText}>Connexus</div>
+              <div style={s.logoSub}>Lead Intel</div>
             </div>
-            <div style={s.footBarBg}><div style={s.footBarFill} /></div>
-            <div style={s.footCredits}>840 of 1,000 credits used</div>
           </div>
-        </div>
-      </aside>
+          <div style={s.navSection}>
+            <div style={s.navLabel}>Menu</div>
+            {NAV_ITEMS.map(({ id, icon }) => (
+              <button key={id} className="nav-btn" onClick={() => setPage(id)}
+                style={{ ...s.navBtn, ...(page === id ? s.navBtnActive : {}) }}>
+                <span style={{ ...s.navBtnIcon, ...(page === id ? { color: "#4F46E5" } : {}) }}>{icon}</span>
+                {id}
+                {page === id && <div style={s.navActivePill} />}
+              </button>
+            ))}
+          </div>
+          <div style={s.sidebarFoot}>
+            <div style={s.footCard}>
+              <div style={s.footRow}>
+                <span style={s.footPlan}>Pro Plan</span>
+                <span style={s.footBadge}>Active</span>
+              </div>
+              <div style={s.footBarBg}><div style={s.footBarFill} /></div>
+              <div style={s.footCredits}>840 of 1,000 credits used</div>
+            </div>
+          </div>
+        </aside>
+      )}
 
       {/* MAIN */}
-      <main style={s.main}>
-        {page === "Scraper"  && <ScraperPage  stats={stats} presets={presets} selectedPresets={selectedPresets} togglePreset={togglePreset} queue={queue} removeFromQueue={removeFromQueue} clearQueue={clearQueue} form={form} setForm={setForm} addToQueue={addToQueue} maxLeads={maxLeads} setMaxLeads={setMaxLeads} totalSelected={totalSelected} running={running} startScraping={startScraping} logs={logs} logRef={logRef} />}
-        {page === "Analysis" && <AnalysisPage analysisStats={analysisStats} fetchAnalysisStats={fetchAnalysisStats} />}
-        {page === "Outreach" && <OutreachPage emailStats={emailStats} fetchEmailStats={fetchEmailStats} />}
+      <main style={{ ...s.main, ...(isMobile ? s.mainMobile : {}) }}>
+        {page === "Scraper"  && <ScraperPage  isMobile={isMobile} stats={stats} presets={presets} selectedPresets={selectedPresets} togglePreset={togglePreset} queue={queue} removeFromQueue={removeFromQueue} clearQueue={clearQueue} form={form} setForm={setForm} addToQueue={addToQueue} maxLeads={maxLeads} setMaxLeads={setMaxLeads} totalSelected={totalSelected} running={running} startScraping={startScraping} logs={logs} logRef={logRef} />}
+        {page === "Analysis" && <AnalysisPage isMobile={isMobile} analysisStats={analysisStats} fetchAnalysisStats={fetchAnalysisStats} />}
+        {page === "Outreach" && <OutreachPage isMobile={isMobile} emailStats={emailStats} fetchEmailStats={fetchEmailStats} />}
         {page === "Logs"     && <LogsPage     logs={logs} clearLogs={() => setLogs([])} />}
         {page === "Help"     && <HelpPage />}
       </main>
+
+      {/* MOBILE BOTTOM NAV */}
+      {isMobile && (
+        <nav style={s.bottomNav}>
+          {NAV_ITEMS.map(({ id, icon }) => (
+            <button key={id} className={`bottom-nav-btn ${page === id ? "active" : ""}`} onClick={() => setPage(id)}>
+              {icon}
+              {id}
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }
 
 // ─── ANALYSIS PAGE ────────────────────────────────────────
-function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
+function AnalysisPage({ isMobile, analysisStats, fetchAnalysisStats }) {
   const [leads, setLeads]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState("all");
@@ -159,7 +214,6 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
   async function loadLeads() {
     setLoading(true);
     try {
-      // Fetch analysis data from a dedicated endpoint
       const r    = await fetch(`${API}/leads-analysis`);
       const data = await r.json();
       setLeads(data || []);
@@ -209,36 +263,49 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
 
   return (
     <div style={{ animation: "fadeIn 0.2s ease" }}>
-      <div style={s.pageHeader}>
+      <div style={{ ...s.pageHeader, ...(isMobile ? s.pageHeaderMobile : {}) }}>
         <div>
           <div style={s.eyebrow}>Website Intelligence</div>
-          <div style={s.pageTitle}>Analysis Dashboard</div>
+          <div style={{ ...s.pageTitle, ...(isMobile ? s.pageTitleMobile : {}) }}>Analysis Dashboard</div>
           <div style={s.pageSub}>SSL, speed, SEO, broken links, and social media — per lead.</div>
         </div>
         <button onClick={() => { fetchAnalysisStats(); loadLeads(); }} className="refresh-btn"
-          style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s" }}>
+          style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s", whiteSpace:"nowrap" }}>
           <IconRefresh /> Refresh
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12, marginBottom:24 }}>
-        {kpis.map(k => (
-          <div key={k.label} className="stat-card"
-            onClick={() => setFilter(filter === k.filter ? "all" : k.filter)}
-            style={{ ...s.statCard, cursor:"pointer", border: filter === k.filter ? `2px solid ${k.color}` : "1px solid #E2E8F0", background: filter === k.filter ? k.bg : "#fff" }}>
-            <div style={{ fontSize:22, marginBottom:6 }}>{k.icon}</div>
-            <div style={{ fontSize:28, fontWeight:700, color:k.color, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>{k.value}</div>
-            <div style={{ fontSize:12, fontWeight:600, color:"#334155", marginTop:5 }}>{k.label}</div>
-            <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{k.desc}</div>
-          </div>
-        ))}
-      </div>
+      {isMobile ? (
+        <div className="kpi-scroll" style={{ marginBottom:20 }}>
+          {kpis.map(k => (
+            <div key={k.label} className="stat-card"
+              onClick={() => setFilter(filter === k.filter ? "all" : k.filter)}
+              style={{ ...s.statCard, minWidth:150, cursor:"pointer", border: filter === k.filter ? `2px solid ${k.color}` : "1px solid #E2E8F0", background: filter === k.filter ? k.bg : "#fff" }}>
+              <div style={{ fontSize:26, fontWeight:700, color:k.color, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>{k.value}</div>
+              <div style={{ fontSize:12, fontWeight:600, color:"#334155", marginTop:5 }}>{k.label}</div>
+              <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{k.desc}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12, marginBottom:24 }}>
+          {kpis.map(k => (
+            <div key={k.label} className="stat-card"
+              onClick={() => setFilter(filter === k.filter ? "all" : k.filter)}
+              style={{ ...s.statCard, cursor:"pointer", border: filter === k.filter ? `2px solid ${k.color}` : "1px solid #E2E8F0", background: filter === k.filter ? k.bg : "#fff" }}>
+              <div style={{ fontSize:28, fontWeight:700, color:k.color, fontVariantNumeric:"tabular-nums", lineHeight:1 }}>{k.value}</div>
+              <div style={{ fontSize:12, fontWeight:600, color:"#334155", marginTop:5 }}>{k.label}</div>
+              <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{k.desc}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Filter bar */}
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16, flexWrap: isMobile ? "wrap" : "nowrap" }}>
         <input
-          style={{ ...s.input, maxWidth:280, padding:"8px 12px" }}
+          style={{ ...s.input, maxWidth: isMobile ? "100%" : 280, padding:"8px 12px" }}
           placeholder="Search business name..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -248,25 +315,75 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
             Clear filter
           </button>
         )}
-        <span style={{ fontSize:12, color:"#94A3B8", marginLeft:"auto" }}>
+        <span style={{ fontSize:12, color:"#94A3B8", marginLeft: isMobile ? 0 : "auto" }}>
           {filtered.length} of {total} leads
         </span>
       </div>
 
-      {/* Leads Table */}
-      <div style={{ ...s.card, padding:0, overflow:"hidden" }}>
-        {loading ? (
+      {/* Leads: Table (desktop) / Cards (mobile) */}
+      {loading ? (
+        <div style={{ ...s.card, padding:0 }}>
           <div style={{ padding:"48px 0", textAlign:"center", color:"#94A3B8", fontSize:13 }}>
             <div style={{ width:28, height:28, border:"2.5px solid #E2E8F0", borderTopColor:"#4F46E5", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
             Loading analysis data...
           </div>
-        ) : filtered.length === 0 ? (
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ ...s.card, padding:0 }}>
           <div style={{ padding:"48px 0", textAlign:"center", color:"#94A3B8", fontSize:13 }}>
             <div style={{ fontSize:32, marginBottom:10 }}>🔍</div>
             No leads match this filter.<br />
             <span style={{ fontSize:12 }}>Run the scraper first, then come back here.</span>
           </div>
-        ) : (
+        </div>
+      ) : isMobile ? (
+        <div>
+          {filtered.map((lead, i) => (
+            <div key={i} className="lead-card">
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
+                <div>
+                  <div style={{ fontWeight:700, color:"#0F172A", fontSize:14 }}>{lead.biz_name || "—"}</div>
+                  <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{lead.niche}</div>
+                </div>
+                <div style={{ width:38, height:38, borderRadius:"50%", background:`conic-gradient(${seoColor(lead.seo_score)} ${(parseInt(lead.seo_score)||0) * 3.6}deg, #E2E8F0 0)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <div style={{ width:28, height:28, background:"#fff", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color: seoColor(lead.seo_score) }}>
+                    {lead.seo_score || "?"}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
+                <span style={{ padding:"3px 8px", borderRadius:6, fontSize:11, fontWeight:600, background: lead.has_ssl === "✅ Yes" ? "#ECFDF5" : "#FEF2F2", color: lead.has_ssl === "✅ Yes" ? "#065F46" : "#991B1B" }}>
+                  {lead.has_ssl === "✅ Yes" ? "✅ Secure" : "❌ No SSL"}
+                </span>
+                <span style={{ padding:"3px 8px", borderRadius:6, fontSize:11, fontWeight:600, background:"#F8FAFC", color: speedColor(lead.load_time) }}>
+                  ⚡ {lead.load_time && lead.load_time !== "N/A" ? lead.load_time : "—"}
+                </span>
+                {parseInt(lead.broken_links) > 0
+                  ? <span style={{ background:"#FEF2F2", color:"#991B1B", padding:"3px 8px", borderRadius:6, fontSize:11, fontWeight:600 }}>⚠ {lead.broken_links} broken</span>
+                  : <span style={{ background:"#ECFDF5", color:"#065F46", padding:"3px 8px", borderRadius:6, fontSize:11, fontWeight:600 }}>✓ No broken links</span>
+                }
+              </div>
+              {lead.social_media && lead.social_media !== "None found" ? (
+                <div style={{ marginBottom:8 }}>
+                  {lead.social_media.split(",").slice(0,3).map((soc,j) => (
+                    <span key={j} className="soc-chip">{soc.split(":")[0].trim()}</span>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color:"#EF4444", fontSize:11, fontWeight:500, marginBottom:8 }}>No social profiles found</div>
+              )}
+              {lead.suggestions && (
+                <div style={{ borderTop:"1px solid #F1F5F9", paddingTop:8, marginTop:2 }}>
+                  {lead.suggestions.split("|").slice(0,2).map((tip, j) => (
+                    <div key={j} className="suggest-line">{tip.trim()}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ ...s.card, padding:0, overflow:"hidden" }}>
           <div style={{ overflowX:"auto" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
               <thead>
@@ -279,12 +396,10 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
               <tbody>
                 {filtered.map((lead, i) => (
                   <tr key={i} className="analysis-row" style={{ borderBottom:"1px solid #F1F5F9", transition:"background 0.1s" }}>
-                    {/* Business */}
                     <td style={{ padding:"12px 14px", maxWidth:160 }}>
                       <div style={{ fontWeight:600, color:"#0F172A", fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{lead.biz_name || "—"}</div>
                       <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{lead.niche}</div>
                     </td>
-                    {/* SSL */}
                     <td style={{ padding:"12px 14px" }}>
                       <span style={{
                         display:"inline-flex", alignItems:"center", gap:4,
@@ -295,13 +410,11 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
                         {lead.has_ssl === "✅ Yes" ? "✅ Secure" : "❌ None"}
                       </span>
                     </td>
-                    {/* Speed */}
                     <td style={{ padding:"12px 14px" }}>
                       <span style={{ fontWeight:600, color: speedColor(lead.load_time), fontVariantNumeric:"tabular-nums" }}>
                         {lead.load_time && lead.load_time !== "N/A" ? lead.load_time : "—"}
                       </span>
                     </td>
-                    {/* SEO */}
                     <td style={{ padding:"12px 14px" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:7 }}>
                         <div style={{ width:36, height:36, borderRadius:"50%", background:`conic-gradient(${seoColor(lead.seo_score)} ${(parseInt(lead.seo_score)||0) * 3.6}deg, #E2E8F0 0)`, display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -311,26 +424,23 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
                         </div>
                       </div>
                     </td>
-                    {/* Broken Links */}
                     <td style={{ padding:"12px 14px" }}>
                       {parseInt(lead.broken_links) > 0
                         ? <span style={{ background:"#FEF2F2", color:"#991B1B", padding:"3px 8px", borderRadius:6, fontSize:11, fontWeight:600 }}>⚠ {lead.broken_links}</span>
                         : <span style={{ color:"#10B981", fontWeight:600, fontSize:12 }}>✓ None</span>
                       }
                     </td>
-                    {/* Social */}
                     <td style={{ padding:"12px 14px", maxWidth:180 }}>
                       {lead.social_media && lead.social_media !== "None found" ? (
                         <div>
-                          {lead.social_media.split(",").slice(0,3).map((s,j) => (
-                            <span key={j} className="soc-chip">{s.split(":")[0].trim()}</span>
+                          {lead.social_media.split(",").slice(0,3).map((soc,j) => (
+                            <span key={j} className="soc-chip">{soc.split(":")[0].trim()}</span>
                           ))}
                         </div>
                       ) : (
                         <span style={{ color:"#EF4444", fontSize:11, fontWeight:500 }}>None found</span>
                       )}
                     </td>
-                    {/* Issues + Suggestions */}
                     <td style={{ padding:"12px 14px", maxWidth:300 }}>
                       {lead.suggestions
                         ? lead.suggestions.split("|").slice(0,3).map((tip, j) => (
@@ -344,8 +454,8 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Legend */}
       <div style={{ marginTop:14, display:"flex", gap:16, flexWrap:"wrap" }}>
@@ -365,7 +475,7 @@ function AnalysisPage({ analysisStats, fetchAnalysisStats }) {
 }
 
 // ─── OUTREACH PAGE ────────────────────────────────────────
-function OutreachPage({ emailStats, fetchEmailStats }) {
+function OutreachPage({ isMobile, emailStats, fetchEmailStats }) {
   const { total, email_sent, followup_sent, seen, pending, error } = emailStats;
   const contacted  = (email_sent || 0) + (followup_sent || 0) + (seen || 0);
   const openRate   = contacted > 0 ? Math.round((seen || 0) / contacted * 100) : 0;
@@ -381,27 +491,27 @@ function OutreachPage({ emailStats, fetchEmailStats }) {
 
   return (
     <div>
-      <div style={s.pageHeader}>
+      <div style={{ ...s.pageHeader, ...(isMobile ? s.pageHeaderMobile : {}) }}>
         <div>
           <div style={s.eyebrow}>Email Campaign</div>
-          <div style={s.pageTitle}>Outreach Overview</div>
+          <div style={{ ...s.pageTitle, ...(isMobile ? s.pageTitleMobile : {}) }}>Outreach Overview</div>
           <div style={s.pageSub}>Live status from your Google Sheet — synced with the Apps Script automation.</div>
         </div>
         <button onClick={fetchEmailStats} className="refresh-btn"
-          style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s" }}>
+          style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s", whiteSpace:"nowrap" }}>
           <IconRefresh /> Refresh
         </button>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14, marginBottom:24 }}>
+      <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3,1fr)", gap: isMobile ? 10 : 14, marginBottom:24 }}>
         {[
           { label:"Total Leads",  value:total,         color:"#4F46E5", foot:"In sheet" },
           { label:"Contacted",    value:contacted,     color:"#0EA5E9", foot:`${reachRate}% of all leads` },
           { label:"Open Rate",    value:`${openRate}%`,color:"#10B981", foot:`${seen} opened` },
-        ].map(({ label, value, color, foot }) => (
-          <div key={label} className="stat-card" style={s.statCard}>
+        ].map(({ label, value, color, foot }, i) => (
+          <div key={label} className="stat-card" style={{ ...s.statCard, ...(isMobile && i === 2 ? { gridColumn:"1 / -1" } : {}) }}>
             <div style={{ ...s.statAccentBar, background:color }} />
             <div style={s.statLabel}>{label}</div>
-            <div style={{ ...s.statValue, color }}>{value}</div>
+            <div style={{ ...s.statValue, color, fontSize: isMobile ? 26 : 34 }}>{value}</div>
             <div style={s.statFoot}>{foot}</div>
           </div>
         ))}
@@ -429,23 +539,23 @@ function OutreachPage({ emailStats, fetchEmailStats }) {
         <div style={{ display:"flex", flexDirection:"column" }}>
           {rows.map((row, i) => (
             <div key={row.label} className="email-stat-row"
-              style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"13px 10px", borderTop:i===0?"none":"1px solid #F1F5F9", borderRadius:8, transition:"background 0.1s" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                <div style={{ width:34, height:34, borderRadius:8, background:row.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding: isMobile ? "12px 6px" : "13px 10px", borderTop:i===0?"none":"1px solid #F1F5F9", borderRadius:8, transition:"background 0.1s", gap:8 }}>
+              <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 8 : 12, minWidth:0 }}>
+                <div style={{ width:34, height:34, borderRadius:8, background:row.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   <div style={{ width:10, height:10, borderRadius:"50%", background:row.color }} />
                 </div>
-                <div>
+                <div style={{ minWidth:0 }}>
                   <div style={{ fontSize:13, fontWeight:600, color:"#0F172A" }}>{row.label}</div>
-                  <div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{row.desc}</div>
+                  {!isMobile && <div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{row.desc}</div>}
                 </div>
               </div>
-              <div style={{ display:"flex", alignItems:"center", gap:16 }}>
-                {total > 0 && (
+              <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 8 : 16, flexShrink:0 }}>
+                {total > 0 && !isMobile && (
                   <div style={{ fontSize:12, color:"#94A3B8", minWidth:36, textAlign:"right" }}>
                     {Math.round((row.value||0)/total*100)}%
                   </div>
                 )}
-                <div style={{ fontSize:22, fontWeight:700, color:row.color, minWidth:44, textAlign:"right", fontVariantNumeric:"tabular-nums" }}>
+                <div style={{ fontSize: isMobile ? 18 : 22, fontWeight:700, color:row.color, minWidth: isMobile ? 30 : 44, textAlign:"right", fontVariantNumeric:"tabular-nums" }}>
                   {row.value ?? 0}
                 </div>
               </div>
@@ -462,7 +572,7 @@ function OutreachPage({ emailStats, fetchEmailStats }) {
 }
 
 // ─── SCRAPER PAGE ─────────────────────────────────────────
-function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, removeFromQueue, clearQueue, form, setForm, addToQueue, maxLeads, setMaxLeads, totalSelected, running, startScraping, logs, logRef }) {
+function ScraperPage({ isMobile, stats, presets, selectedPresets, togglePreset, queue, removeFromQueue, clearQueue, form, setForm, addToQueue, maxLeads, setMaxLeads, totalSelected, running, startScraping, logs, logRef }) {
   const total    = stats.total      ?? 0;
   const wEmail   = stats.with_email ?? 0;
   const wPhone   = stats.with_phone ?? 0;
@@ -471,19 +581,20 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
   const phonePct = total > 0 ? `${Math.round(wPhone/total*100)}%` : "0%";
   return (
     <div>
-      <div style={s.pageHeader}>
+      <div style={{ ...s.pageHeader, ...(isMobile ? s.pageHeaderMobile : {}) }}>
         <div>
           <div style={s.eyebrow}>Lead Intelligence</div>
-          <div style={s.pageTitle}>Lead Scraper</div>
+          <div style={{ ...s.pageTitle, ...(isMobile ? s.pageTitleMobile : {}) }}>Lead Scraper</div>
           <div style={s.pageSub}>Pull verified business leads from Google Maps into your sheet.</div>
         </div>
-        <button onClick={startScraping} disabled={running} className="btn-primary" style={{ ...s.btnPrimary, padding:"10px 22px", fontSize:14 }}>
+        <button onClick={startScraping} disabled={running} className="btn-primary"
+          style={{ ...s.btnPrimary, padding:"10px 22px", fontSize:14, width: isMobile ? "100%" : "auto", justifyContent:"center" }}>
           {running
             ? <><span style={{ width:14, height:14, border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", borderRadius:"50%", display:"inline-block", animation:"spin 0.7s linear infinite" }} /> Running...</>
             : <><IconPlus /> Start Scraping</>}
         </button>
       </div>
-      <div style={s.statGrid}>
+      <div style={{ ...s.statGrid, gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 10 : 14 }}>
         {[
           { label:"Total Leads",  value:total,    foot:"In Google Sheet",      color:"#4F46E5" },
           { label:"With Email",   value:wEmail,   foot:`${emailPct} of total`, color:"#0EA5E9" },
@@ -493,12 +604,12 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
           <div key={label} className="stat-card" style={s.statCard}>
             <div style={{ ...s.statAccentBar, background:color }} />
             <div style={s.statLabel}>{label}</div>
-            <div style={{ ...s.statValue, color }}>{value}</div>
+            <div style={{ ...s.statValue, color, fontSize: isMobile ? 26 : 34 }}>{value}</div>
             <div style={s.statFoot}>{foot}</div>
           </div>
         ))}
       </div>
-      <div style={s.bodyGrid}>
+      <div style={{ ...s.bodyGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
           <div style={s.card}>
             <div style={s.cardHeader}>
@@ -546,7 +657,7 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
           <div style={s.card}>
             <div style={s.cardHeader}><div style={s.cardTitle}>Custom Query</div></div>
-            <div style={s.formGrid}>
+            <div style={{ ...s.formGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
               {[
                 { key:"query",    label:"Search Term", placeholder:"e.g. SEO Consultant" },
                 { key:"location", label:"Location",    placeholder:"e.g. London, UK"     },
@@ -560,8 +671,8 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
               ))}
             </div>
             <div style={{ display:"flex", gap:8, marginTop:4 }}>
-              <button onClick={addToQueue} className="btn-primary" style={s.btnPrimary}><IconPlus /> Add to Queue</button>
-              <button onClick={clearQueue} className="btn-danger"  style={s.btnDanger}><IconTrash /> Clear Queue</button>
+              <button onClick={addToQueue} className="btn-primary" style={{ ...s.btnPrimary, flex: isMobile ? 1 : "initial", justifyContent:"center" }}><IconPlus /> Add to Queue</button>
+              <button onClick={clearQueue} className="btn-danger"  style={{ ...s.btnDanger, flex: isMobile ? 1 : "initial", justifyContent:"center" }}><IconTrash /> Clear Queue</button>
             </div>
           </div>
           {queue.length > 0 && (
@@ -573,7 +684,7 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
               <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
                 {queue.map((item, i) => (
                   <div key={i} className="queue-pill" style={s.queuePill}>
-                    <div>
+                    <div style={{ minWidth:0, overflow:"hidden" }}>
                       <span style={s.queueNum}>{i+1}</span>
                       <span style={s.queueText}>{item[0]}</span>
                       <span style={s.queueLoc}>{item[1]}</span>
@@ -594,7 +705,7 @@ function ScraperPage({ stats, presets, selectedPresets, togglePreset, queue, rem
           </div>
           {running && <span style={s.consoleLive}>Running</span>}
         </div>
-        <div ref={logRef} style={s.consoleBody}>
+        <div ref={logRef} style={{ ...s.consoleBody, fontSize: isMobile ? 11 : 12, maxHeight: isMobile ? 240 : 320 }}>
           {logs.length === 0
             ? <span style={{ color:"#94A3B8", fontStyle:"italic" }}>Waiting for scraper to start...</span>
             : logs.map((line, i) => (
@@ -709,9 +820,15 @@ const s = {
   footBarFill:    { height:4, background:"#4F46E5", borderRadius:4, width:"84%" },
   footCredits:    { fontSize:11, color:"#94A3B8" },
   main:           { flex:1, padding:"32px 36px", overflowY:"auto", maxWidth:"calc(100vw - 220px)" },
+  mainMobile:     { maxWidth:"100vw", padding:"16px 16px 92px", overflowX:"hidden" },
+  mobileHeader:   { position:"sticky", top:0, zIndex:20, background:"#fff", borderBottom:"1px solid #E2E8F0", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" },
+  mobileHeaderBadge: { fontSize:10, fontWeight:600, color:"#4F46E5", background:"#EEF2FF", padding:"4px 9px", borderRadius:20 },
+  bottomNav:      { position:"fixed", bottom:0, left:0, right:0, zIndex:20, background:"#fff", borderTop:"1px solid #E2E8F0", display:"flex", paddingBottom:"env(safe-area-inset-bottom, 0px)", boxShadow:"0 -2px 12px rgba(15,23,42,0.05)" },
   pageHeader:     { display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:28 },
+  pageHeaderMobile: { flexDirection:"column", gap:14, marginBottom:20 },
   eyebrow:        { fontSize:11, fontWeight:600, color:"#4F46E5", letterSpacing:0.8, textTransform:"uppercase", marginBottom:5 },
   pageTitle:      { fontSize:24, fontWeight:700, color:"#0F172A", letterSpacing:-0.5, lineHeight:1.2 },
+  pageTitleMobile:{ fontSize:20 },
   pageSub:        { fontSize:13, color:"#64748B", marginTop:4 },
   statGrid:       { display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:24 },
   statCard:       { background:"#fff", border:"1px solid #E2E8F0", borderRadius:12, padding:"18px 20px", position:"relative", overflow:"hidden" },
@@ -739,11 +856,11 @@ const s = {
   input:          { width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:8, color:"#0F172A", fontSize:13, padding:"9px 12px", transition:"all 0.15s", fontFamily:"inherit" },
   btnPrimary:     { display:"inline-flex", alignItems:"center", gap:6, background:"#4F46E5", border:"none", color:"#fff", fontSize:13, fontWeight:600, padding:"9px 16px", borderRadius:8, cursor:"pointer", transition:"all 0.12s" },
   btnDanger:      { display:"inline-flex", alignItems:"center", gap:6, background:"#fff", border:"1.5px solid #E2E8F0", color:"#64748B", fontSize:13, fontWeight:500, padding:"9px 14px", borderRadius:8, cursor:"pointer", transition:"all 0.12s" },
-  queuePill:      { display:"flex", alignItems:"center", justifyContent:"space-between", background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:8, padding:"9px 12px", transition:"all 0.12s" },
+  queuePill:      { display:"flex", alignItems:"center", justifyContent:"space-between", background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:8, padding:"9px 12px", transition:"all 0.12s", gap:8 },
   queueNum:       { fontSize:11, fontWeight:600, color:"#94A3B8", marginRight:8, fontVariantNumeric:"tabular-nums" },
   queueText:      { fontSize:13, fontWeight:500, color:"#334155" },
   queueLoc:       { fontSize:12, color:"#94A3B8", marginLeft:6 },
-  queueDelete:    { background:"transparent", border:"none", color:"#CBD5E1", cursor:"pointer", padding:4, borderRadius:4, display:"flex", alignItems:"center", transition:"all 0.12s" },
+  queueDelete:    { background:"transparent", border:"none", color:"#CBD5E1", cursor:"pointer", padding:4, borderRadius:4, display:"flex", alignItems:"center", transition:"all 0.12s", flexShrink:0 },
   consoleHeader:  { background:"#fff", border:"1px solid #E2E8F0", borderBottom:"none", borderRadius:"12px 12px 0 0", padding:"11px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" },
   consoleTitle:   { fontSize:12, fontWeight:600, color:"#64748B", letterSpacing:0.3 },
   consoleLive:    { fontSize:11, fontWeight:600, color:"#10B981", background:"#ECFDF5", padding:"2px 8px", borderRadius:20 },
